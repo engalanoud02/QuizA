@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>منصة مراجعة الحوسبة الرقمية DC101 - الصف العاشر</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Pro Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Plus Jakarta Sans & IBM Plex Sans Arabic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"IBM Plex Sans Arabic"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        mono: ['"Plus Jakarta Sans"', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        },
+                        apple: {
+                            blue: '#0071e3',
+                            indigo: '#5e5ce6',
+                            purple: '#bf5af2',
+                            pink: '#ff375f',
+                            teal: '#64d2ff',
+                            green: '#30d158',
+                            orange: '#ff9f0a',
+                            yellow: '#ffd60a',
+                            dark: '#0f172a',
+                            cardLight: 'rgba(255, 255, 255, 0.72)',
+                            borderLight: 'rgba(255, 255, 255, 0.65)',
+                        }
+                    },
+                    boxShadow: {
+                        'glass': '0 20px 50px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.6)',
+                        'floating': '0 25px 40px -10px rgba(37, 99, 235, 0.25)',
+                        'card-pop': '0 12px 30px -5px rgba(0, 0, 0, 0.08)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --sat: env(safe-area-inset-top);
+            --sab: env(safe-area-inset-bottom);
+        }
+
+        body {
+            font-family: 'IBM Plex Sans Arabic', -apple-system, sans-serif;
+            min-height: 100vh;
+            background: #090d16;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        /* Ambient Dynamic Mesh Background */
+        .ambient-mesh {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .mesh-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            animation: floatOrb 18s ease-in-out infinite alternate;
+        }
+        .orb-1 { width: 450px; height: 450px; background: radial-gradient(circle, #3b82f6 0%, transparent 70%); top: -100px; right: -80px; }
+        .orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, #8b5cf6 0%, transparent 70%); bottom: -150px; left: -100px; animation-duration: 22s; }
+        .orb-3 { width: 350px; height: 350px; background: radial-gradient(circle, #06b6d4 0%, transparent 70%); top: 40%; left: 30%; animation-duration: 15s; }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(40px, 30px) scale(1.08); }
+            100% { transform: translate(-30px, 50px) scale(0.95); }
+        }
+
+        /* iPad / iPhone Shell Container */
+        .device-chassis {
+            width: 100%;
+            max-width: 520px;
+            height: 94vh;
+            max-height: 960px;
+            margin: auto;
+            position: relative;
+            z-index: 10;
+            background: rgba(248, 250, 252, 0.88);
+            backdrop-filter: blur(40px) saturate(190%);
+            -webkit-backdrop-filter: blur(40px) saturate(190%);
+            border-radius: 46px;
+            border: 8px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 35px 80px -15px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        @media (max-width: 640px) {
+            .device-chassis {
+                max-width: 100%;
+                height: 100vh;
+                max-height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.85);
+        }
+
+        .glass-island {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Custom Interactive Buttons */
+        .interactive-scale {
+            transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .interactive-scale:hover {
+            transform: translateY(-2px);
+        }
+        .interactive-scale:active {
+            transform: scale(0.97) translateY(1px);
+        }
+
+        .option-card {
+            transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .option-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transform: translateX(100%);
+            transition: transform 0.5s ease;
+        }
+        .option-card:hover::after {
+            transform: translateX(-100%);
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.4);
+            border-radius: 999px;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-0 sm:p-3 select-none">
+
+    <div class="ambient-mesh">
+        <div class="mesh-orb orb-1"></div>
+        <div class="mesh-orb orb-2"></div>
+        <div class="mesh-orb orb-3"></div>
+    </div>
+
+    <!-- MAIN DEVICE CHASSIS -->
+    <div class="device-chassis">
+
+        <!-- Streamlined Top Bar (Clean, without battery, wifi, or clock) -->
+        <header class="pt-3 pb-2.5 px-6 flex justify-between items-center z-40 bg-white/40 backdrop-blur-md border-b border-white/60">
+            <!-- Brand Badge -->
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
+                <span class="text-xs font-black text-slate-800 tracking-tight">DC101 • الحوسبة الرقمية</span>
+            </div>
+
+            <!-- School Affiliation Badge & Sound Control -->
+            <div class="flex items-center gap-2">
+                <div class="px-2.5 py-1 rounded-full bg-slate-900/10 border border-slate-700/20 text-[10px] font-black text-slate-800 flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-school text-[10px] text-blue-600"></i>
+                    <span>ثانوية أميمة بنت ربيعة - بنات (مسارات)</span>
+                </div>
+                <!-- Sound Control Island -->
+                <div class="glass-island px-3 py-1 rounded-full flex items-center gap-1.5 border border-slate-700/60 shadow-lg cursor-pointer hover:scale-105 transition-transform" onclick="SoundFX.toggleMute()" title="كتم / تفعيل الصوت">
+                    <div class="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>
+                    <span class="text-[9.5px] font-black text-white tracking-wider uppercase">الصوت</span>
+                    <i id="btn-sound-icon" class="fa-solid fa-volume-high text-[9.5px] text-slate-300"></i>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto px-4 py-2.5 flex flex-col relative">
+
+            <!-- ================= SCREEN 1: WELCOME / HERO SCREEN ================= -->
+            <section id="view-welcome" class="h-full flex flex-col justify-between text-center py-2">
+                <!-- Glowing Shield Hero Emblem -->
+                <div class="space-y-2 pt-2">
+                    <div class="w-20 h-20 mx-auto bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 rounded-3xl p-1 shadow-floating flex items-center justify-center transform hover:rotate-6 transition-all duration-300">
+                        <div class="w-full h-full bg-white/10 backdrop-blur-md rounded-[20px] flex items-center justify-center border border-white/30">
+                            <i class="fa-solid fa-sparkles text-3xl text-amber-300 drop-shadow-md"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Designer Signature Badge -->
+                    <div class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-black bg-gradient-to-r from-blue-500/15 via-indigo-500/15 to-purple-500/15 text-indigo-700 border border-indigo-200/60 shadow-sm backdrop-blur-sm">
+                        <i class="fa-solid fa-crown text-amber-500 text-[11px]"></i>
+                        <span>إعداد م.العنود العتيبي</span>
+                    </div>
+
+                    <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                        منصة المراجعة الذكية
+                    </h1>
+                    <p class="text-xs font-bold text-slate-500">
+                        مقرر الحوسبة الرقمية (DC101) • الصف العاشر
+                    </p>
+                </div>
+
+                <!-- Motivation & Smart Generator Badge Card -->
+                <div class="glass-panel p-4 rounded-3xl shadow-glass text-center space-y-2 border border-white/80 my-auto">
+                    <div class="w-10 h-10 mx-auto rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 text-lg border border-blue-100">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <h3 class="text-xs sm:text-sm font-black text-slate-800">جاهزة لتحدي الاختبار القصير؟</h3>
+                    <p class="text-[11.5px] text-slate-600 leading-relaxed font-semibold px-2">
+                        في كل محاولة تخوضينها، ستتولد لكِ <strong class="text-blue-600">10 أسئلة عشوائية جديدة ومختلفة</strong> لاختبار مهاراتكِ وتثبيت فهمكِ بدقة وسرعة!
+                    </p>
+                </div>
+
+                <!-- Student Personalized Input & Launch -->
+                <div class="space-y-3 pb-1">
+                    <div class="text-right">
+                        <label class="block text-[11px] font-black text-slate-700 pr-1 mb-1">اسم الطالبة المتميزة:</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-graduation-cap absolute right-4 top-3.5 text-blue-500 text-sm"></i>
+                            <input type="text" id="input-student" placeholder="أدخلي اسمكِ لتسجيل درجتك في بطاقة النتيجة..."
+                                class="w-full pr-11 pl-4 py-2.5 bg-white/85 backdrop-blur-md rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 shadow-sm transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <button onclick="QuizApp.start()" class="w-full interactive-scale bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:opacity-95 text-white font-extrabold py-3 px-6 rounded-2xl shadow-floating text-xs sm:text-sm flex items-center justify-center gap-2">
+                            <span>انطلقي في الاختبار التجريبي</span>
+                            <i class="fa-solid fa-arrow-left text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Leadership / School Administration Footer -->
+                    <div class="pt-2 border-t border-slate-200/70 flex items-center justify-around text-[10px] font-bold text-slate-700 bg-white/60 backdrop-blur-sm rounded-xl py-1.5 px-2">
+                        <div class="flex items-center gap-1">
+                            <i class="fa-solid fa-user-check text-blue-600 text-[10px]"></i>
+                            <span>رئيسة القسم: <strong class="text-slate-900 font-extrabold">أ. سندس الكندري</strong></span>
+                        </div>
+                        <span class="text-slate-300">|</span>
+                        <div class="flex items-center gap-1">
+                            <i class="fa-solid fa-award text-purple-600 text-[10px]"></i>
+                            <span>مديرة المدرسة: <strong class="text-slate-900 font-extrabold">أ. منى المطيري</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        <!-- ================= SCREEN 2: ACTIVE QUIZ VIEW (ONE-SCREEN FIT) ================= -->
+        <section id="view-quiz" class="hidden flex flex-col justify-start gap-2.5 py-1">
+            <!-- Top Progress HUD Card -->
+            <div class="glass-panel p-2.5 rounded-2xl shadow-card-pop space-y-1.5 border border-white shrink-0">
+                <div class="flex justify-between items-center text-[11px] font-extrabold text-slate-800">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+                        <span id="tracker-counter">السؤال 1 من 10</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="hud-score" class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold">
+                            النقاط: 0
+                        </span>
+                        <span id="hud-timer" class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-mono font-bold flex items-center gap-1">
+                            <i class="fa-regular fa-clock text-[9px]"></i> 00:00
+                        </span>
+                    </div>
+                </div>
+
+                <!-- iOS Progress Track Bar -->
+                <div class="w-full bg-slate-200/70 h-2 rounded-full overflow-hidden p-0.5">
+                    <div id="quiz-progress-bar" class="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-full transition-all duration-500 ease-out w-0"></div>
+                </div>
+            </div>
+
+            <!-- Main Question Card (Clean, tight, directly beneath HUD) -->
+            <div class="glass-panel p-3.5 sm:p-4 rounded-3xl shadow-glass border border-white flex flex-col text-right">
+                <div class="flex items-center justify-between mb-2">
+                    <span id="label-q-category" class="px-2.5 py-0.5 rounded-lg bg-blue-100/90 text-blue-800 text-[10px] font-black border border-blue-200">
+                        السؤال الأول : اختاري الإجابة الصحيحة
+                    </span>
+                    <span id="label-q-page" class="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 text-[9.5px] font-bold border border-slate-200">
+                        ص 19
+                    </span>
+                </div>
+
+                <h2 id="label-q-title" class="text-xs sm:text-sm font-black text-slate-900 leading-snug mb-2.5">
+                    جاري تحميل السؤال...
+                </h2>
+
+                <!-- Options Container -->
+                <div id="box-options" class="space-y-1.5">
+                    <!-- Injected via JavaScript -->
+                </div>
+            </div>
+
+            <!-- Educational Instant Feedback Banner (Compact) -->
+            <div id="card-feedback" class="hidden p-2.5 rounded-2xl text-right transition-all duration-300 shadow-sm border shrink-0">
+                <div class="flex items-start gap-2">
+                    <div id="fb-icon-wrap" class="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+                        <i id="fb-icon" class="text-xs"></i>
+                    </div>
+                    <div class="space-y-0.5">
+                        <h4 id="fb-title" class="font-black text-[11px]"></h4>
+                        <p id="fb-explanation" class="text-[10px] font-semibold leading-relaxed text-slate-700"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Next Question Button -->
+            <button id="btn-next" onclick="QuizApp.next()" class="hidden w-full shrink-0 interactive-scale bg-slate-900 hover:bg-black text-white font-extrabold py-3 px-5 rounded-2xl shadow-lg text-xs flex items-center justify-center gap-2">
+                <span id="btn-next-label">السؤال التالي</span>
+                <i class="fa-solid fa-chevron-left text-[10px]"></i>
+            </button>
+        </section>
+
+        <!-- ================= SCREEN 3: RESULT & CERTIFICATE SCREEN ================= -->
+            <section id="view-results" class="hidden h-full flex flex-col justify-between text-center overflow-y-auto py-1">
+                <!-- Result Card -->
+                <div class="glass-panel p-4 rounded-3xl shadow-glass border border-white space-y-2 relative overflow-hidden">
+                    <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-amber-400 to-amber-600 p-0.5 shadow-md flex items-center justify-center">
+                        <div class="w-full h-full bg-white/20 backdrop-blur-md rounded-[18px] flex items-center justify-center">
+                            <i id="res-badge-icon" class="fa-solid fa-crown text-2xl text-white"></i>
+                        </div>
+                    </div>
+
+                    <div class="space-y-0.5">
+                        <h2 id="res-title" class="text-lg font-black text-slate-900">
+                            مبدعة ومتألقة!
+                        </h2>
+                        <p id="res-subtitle" class="text-[11px] font-semibold text-slate-600 px-2">
+                            استيعاب فائق لمصطلحات ومفاهيم الكتاب المدرسي.
+                        </p>
+                    </div>
+
+                    <!-- Glowing Circular Score -->
+                    <div class="py-1">
+                        <div class="inline-flex flex-col items-center justify-center w-24 h-24 rounded-full border-4 border-blue-500 bg-white/85 shadow-inner">
+                            <span id="res-score-text" class="text-2xl font-black text-blue-600 font-mono">10/10</span>
+                            <span id="res-percentage-text" class="text-[11px] font-black text-slate-500 font-mono">100%</span>
+                        </div>
+                    </div>
+
+                    <!-- Stats Matrix -->
+                    <div class="grid grid-cols-3 gap-1.5 text-center text-xs pt-1">
+                        <div class="bg-white/80 p-1.5 rounded-xl border border-slate-100 shadow-sm">
+                            <span class="text-slate-400 block text-[9px] font-bold">الوقت المستغرق</span>
+                            <span id="res-time-spent" class="font-black text-slate-800 text-[11px] font-mono">01:30</span>
+                        </div>
+                        <div class="bg-white/80 p-1.5 rounded-xl border border-slate-100 shadow-sm">
+                            <span class="text-slate-400 block text-[9px] font-bold">الإجابات الصحيحة</span>
+                            <span id="res-correct-count" class="font-black text-emerald-600 text-[11px] font-mono">10</span>
+                        </div>
+                        <div class="bg-white/80 p-1.5 rounded-xl border border-slate-100 shadow-sm">
+                            <span class="text-slate-400 block text-[9px] font-bold">التقدير</span>
+                            <span id="res-grade-badge" class="font-black text-blue-700 text-[11px]">امتياز 👑</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review Accordion Toggle -->
+                <div class="space-y-2 py-1">
+                    <button onclick="QuizApp.toggleReview()" class="w-full bg-white/80 hover:bg-white text-slate-800 font-black py-2.5 px-3 rounded-2xl border border-slate-200/80 shadow-sm text-[11px] flex items-center justify-between transition">
+                        <span class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-list-check text-blue-600 text-xs"></i>
+                            <span>مراجعة تفاصيل الإجابات وأسبابها من الكتاب</span>
+                        </span>
+                        <i id="review-chevron" class="fa-solid fa-chevron-down text-[9px] text-slate-400 transition-transform duration-300"></i>
+                    </button>
+
+                    <div id="box-review-items" class="hidden space-y-2 text-right max-h-48 overflow-y-auto">
+                        <!-- Injected Review Cards -->
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="pt-1">
+                    <button onclick="QuizApp.start()" class="w-full interactive-scale bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white font-extrabold py-3 px-5 rounded-2xl shadow-floating text-xs flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        <span>توليد 10 أسئلة جديدة والمحاولة مجدداً</span>
+                    </button>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="py-1.5 flex justify-center bg-white/30 backdrop-blur-md border-t border-white/50">
+            <div class="w-28 h-1 bg-slate-400/70 rounded-full"></div>
+        </footer>
+    </div>
+
+    <script>
+        /* 
+         * Web Audio Synthesizer: Sound effects for native iOS feel without external mp3s
+         */
+        const SoundFX = {
+            muted: false,
+            ctx: null,
+
+            init() {
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) this.ctx = new AudioContext();
+                } catch (e) {
+                    console.log('Audio init skipped');
+                }
+            },
+
+            playClick() {
+                if (this.muted || !this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+                gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.05);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.05);
+            },
+
+            playCorrect() {
+                if (this.muted || !this.ctx) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(now + 0.35);
+            },
+
+            playWrong() {
+                if (this.muted || !this.ctx) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(260, now);
+                osc.frequency.setValueAtTime(196, now + 0.1);
+                gain.gain.setValueAtTime(0.06, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(now + 0.25);
+            },
+
+            toggleMute() {
+                this.muted = !this.muted;
+                const icon = document.getElementById('btn-sound-icon');
+                if (this.muted) {
+                    icon.className = 'fa-solid fa-volume-xmark text-[10px] text-rose-300';
+                } else {
+                    icon.className = 'fa-solid fa-volume-high text-[10px] text-slate-300';
+                }
+            }
+        };
+
+        const QUESTION_BANK = [
+            // ================= ص 19: مفاهيم الأمن السيبراني وأمن المعلومات =================
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 19',
+                question: 'الممارسات والتدابير المتبعة لحماية البيانات والأنظمة من الوصول غير المصرح به وتشمل حماية المعلومات حماية عامة بغض النظر عن الوسائط المستخدمة سواء كانت رقمية أو غير رقمية:',
+                options: ['أمن المعلومات Information Security', 'الأمن السيبراني Cyber Security', 'المصادقة Authentication', 'الشبكة الافتراضية VPN'],
+                correct: 0,
+                explanation: 'أمن المعلومات يشمل حماية المعلومات حماية عامة بغض النظر عن الوسائط المستخدمة سواء كانت رقمية أو غير رقمية (ورقية) (ص 19).'
+            },
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 19',
+                question: 'ممارسة حماية الأنظمة والشبكات من التهديدات الإلكترونية، وحماية البيانات الرقمية والبرامج من الهجمات التي تهدف للوصول إلى المعلومات المهمة أو تغييرها أو تدميرها:',
+                options: ['الأمن السيبراني Cyber Security', 'أمن المعلومات العام', 'إدارة التصحيحات Patch Management', 'البرمجة كائنية التوجه'],
+                correct: 0,
+                explanation: 'الأمن السيبراني يختص بحماية الأنظمة والشبكات والبيانات الرقمية فقط من التهديدات الإلكترونية (ص 19).'
+            },
+            {
+                type: 'tf',
+                badge: 'السؤال الثاني : ضعي علامة ( ✓ ) أو ( ✗ )',
+                page: 'ص 19',
+                question: 'تشمل حماية أمن المعلومات البيانات الرقمية فقط.',
+                options: ['عبارة صحيحة ( ✓ )', 'عبارة غير صحيحة ( ✗ )'],
+                correct: 1,
+                explanation: 'عبارة غير صحيحة ( ✗ )؛ لأن أمن المعلومات يشمل حماية المعلومات العامة سواء كانت رقمية أو غير رقمية (ورقية) (ص 19).'
+            },
+            {
+                type: 'tf',
+                badge: 'السؤال الثاني : ضعي علامة ( ✓ ) أو ( ✗ )',
+                page: 'ص 19',
+                question: 'يعد الأمن السيبراني فرعاً من أمن المعلومات يختص بحماية المعلومات والأنظمة الرقمية فقط.',
+                options: ['عبارة صحيحة ( ✓ )', 'عبارة غير صحيحة ( ✗ )'],
+                correct: 0,
+                explanation: 'عبارة صحيحة ( ✓ )؛ الأمن السيبراني يختص بحماية المعلومات والأنظمة الرقمية فقط ويتعامل مع التهديدات الرقمية (ص 19).'
+            },
+
+            // ================= ص 20: المحاور الرئيسة لأمن المعلومات CIA =================
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 20',
+                question: 'أي مما يلي يعد من المحاور الرئيسية لنموذج CIA في الأمن السيبراني؟',
+                options: ['السرية Confidentiality', 'المصادقة Authentication', 'البرمجة Programming', 'التحليل Analysis'],
+                correct: 0,
+                explanation: 'نموذج CIA يتكون من ثلاثة محاور رئيسية: السرية (Confidentiality)، النزاهة (Integrity)، والتوفر (Availability) (ص 20).'
+            },
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 20',
+                question: 'التأكد من حماية المعلومات بحيث لا يمكن الوصول إليها والحفاظ على سريتها إلا من قبل الأفراد المصرح لهم فقط (Authorized Individuals):',
+                options: ['السرية Confidentiality', 'النزاهة Integrity', 'التوفر Availability', 'المصادقة البيومترية'],
+                correct: 0,
+                explanation: 'السرية تعني حماية المعلومات والاقتصار على الأفراد المصرح لهم فقط مثل الصور والبيانات المصرفية (ص 20).'
+            },
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 20',
+                question: 'الحفاظ على صحة المعلومات الرقمية وموثوقيتها وسلامتها لضمان عدم قيام أطراف غير مصرح لهم بالتلاعب بها يسمى:',
+                options: ['النزاهة Integrity', 'السرية Confidentiality', 'التوفر Availability', 'التشفير'],
+                correct: 0,
+                explanation: 'النزاهة (Integrity) تشير للحفاظ على صحة المعلومات وموثوقيتها وسلامتها ومنع التلاعب بالبيانات المرسلة والمستقبلة (ص 20).'
+            },
+            {
+                type: 'tf',
+                badge: 'السؤال الثاني : ضعي علامة ( ✓ ) أو ( ✗ )',
+                page: 'ص 20',
+                question: 'يقصد بالتوفر (Availability) التأكد من أن المعلومات والموارد متاحة باستمرار وقابلة للاستخدام عند الحاجة.',
+                options: ['عبارة صحيحة ( ✓ )', 'عبارة غير صحيحة ( ✗ )'],
+                correct: 0,
+                explanation: 'عبارة صحيحة ( ✓ )؛ التوفر يعني إمكانية الوصول إلى الأنظمة والخدمات وتشغيلها عند الحاجة وحمايتها من الانقطاع (ص 20).'
+            },
+
+            // ================= ص 22: ماكينة الصراف الآلي ATM =================
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 22',
+                question: 'في ماكينة الصراف الآلي ATM، إبلاغ المستخدم عن أي عمليات مصرفية تمت فوراً يمثل تطبيقاً لمبدأ:',
+                options: ['النزاهة Integrity', 'السرية Confidentiality', 'التوفر Availability', 'التشفير البرمجي'],
+                correct: 0,
+                explanation: 'إبلاغ المستخدم عن العمليات يضمن سلامة البيانات وعدم تغيير معلومات الحسابات دون تصريح (النزاهة) (ص 22).'
+            },
+            {
+                type: 'tf',
+                badge: 'السؤال الثاني : ضعي علامة ( ✓ ) أو ( ✗ )',
+                page: 'ص 22',
+                question: 'تطبيق المصادقة الثنائية عبر البطاقة البنكية ورمز المرور PIN في ماكينة الصراف الآلي يهدف للحفاظ على سرية المعلومات المصرفية.',
+                options: ['عبارة صحيحة ( ✓ )', 'عبارة غير صحيحة ( ✗ )'],
+                correct: 0,
+                explanation: 'عبارة صحيحة ( ✓ )؛ المصادقة الثنائية في الـ ATM تحافظ على سرية Confidentiality المعلومات المصرفية (ص 22).'
+            },
+
+            // ================= ص 23 - 24: الإجراءات الأمنية والمصادقة =================
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 23',
+                question: 'المصادقة هي طبقة إضافية أو أكثر من الأمان تستخدم لحماية الحسابات، وتنقسم إلى عوامل منها:',
+                options: ['عامل المعرفة، عامل الامتلاك، عامل المقياس الحيوي', 'عامل السرعة، عامل الدقة، عامل الذاكرة', 'عامل التخزين، عامل المعالجة، عامل الإخراج', 'عامل البرمجة، عامل التصميم، عامل الاختبار'],
+                correct: 0,
+                explanation: 'عوامل المصادقة الثلاثة هي: ما تعرفه (المعرفة)، ما تملكه (الامتلاك)، وما أنت عليه (المقياس الحيوي) (ص 23).'
+            },
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 23',
+                question: 'المصادقة التي تستخدم خصائص بيولوجية فريدة يصعب تكرارها أو تزويرها مثل التعرف على الوجه في تطبيق هويتي تسمى:',
+                options: ['المصادقة البيومترية Biometric Authentication', 'المصادقة المستندة إلى التطبيق', 'مصادقة الرسائل القصيرة OTP', 'مفتاح الأمان المادي'],
+                correct: 0,
+                explanation: 'المصادقة البيومترية تستخدم سمات حيوية مثل بصمة الوجه أو الأصابع أو مسح قزحية العين (ص 23).'
+            },
+            {
+                type: 'tf',
+                badge: 'السؤال الثاني : ضعي علامة ( ✓ ) أو ( ✗ )',
+                page: 'ص 24',
+                question: 'تعد بصمة الوجه وبصمة الأصبع مثالاً على عامل المقياس الحيوي (Something you Are).',
+                options: ['عبارة صحيحة ( ✓ )', 'عبارة غير صحيحة ( ✗ )'],
+                correct: 0,
+                explanation: 'عبارة صحيحة ( ✓ )؛ بصمات الأصابع والوجه وقزحية العين تمثل عامل المقياس الحيوي (ص 24).'
+            },
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 24',
+                question: 'مفتاح الأمان المادي (Hardware token) والكروت الذكية (Smart cards) يندرجان تحت:',
+                options: ['عامل الامتلاك (ما تملكه Something you Have)', 'عامل المعرفة (ما تعرفه Something you Know)', 'عامل المقياس الحيوي (Something you Are)', 'عامل الموقع الجغرافي'],
+                correct: 0,
+                explanation: 'مفاتيح الأمان والكروت الذكية والأجهزة الذكية تندرج تحت عامل الامتلاك (ما تملكه) (ص 24).'
+            },
+
+            // ================= ص 25 - 28: أدوات الحماية والتشفير =================
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 25',
+                question: 'أداة تعمل على تشفير اتصال الإنترنت وتوجيهه عبر خادم في موقع مختلف لإخفاء عنوان IP ونشاط التصفح وبخاصة في شبكات Wi-Fi العامة:',
+                options: ['الشبكة الافتراضية الخاصة VPN', 'المتصفح الخفي', 'برنامج FlowCrypt', 'برنامج PyCharm'],
+                correct: 0,
+                explanation: 'الشبكة الافتراضية الخاصة (VPN) تنشئ اتصالاً مشفراً يخفي عنوان الـ IP ونشاط المستخدم (ص 25).'
+            },
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 26',
+                question: 'أي من الأدوات التالية تستخدم لإدارة عملية تشفير رسائل البريد الإلكتروني في Gmail عبر متصفح Chrome؟',
+                options: ['أداة FlowCrypt', 'متصفح Mozilla Firefox', 'تطبيق هويتي', 'تطبيق Apple Pay'],
+                correct: 0,
+                explanation: 'أداة FlowCrypt تثبت كإضافة على متصفح Chrome لتشفير رسائل البريد الإلكتروني (ص 26).'
+            },
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 27',
+                question: 'عند تفعيل خاصية التصفح المتخفي (Incognito) في متصفح Google Chrome فإن المتصفح يقوم بـ:',
+                options: ['عدم الاحتفاظ بسجل التصفح وملفات تعريف الارتباط والبيانات المدخلة في النماذج', 'حماية الجهاز من انقطاع الكهرباء التام', 'منع مزود خدمة الإنترنت من رؤية أي اتصال تماماً', 'تسريع المعالج المركزي للحاسوب'],
+                correct: 0,
+                explanation: 'التصفح المتخفي لا يحتفظ بسجل التصفح أو ملفات تعريف الارتباط أو البيانات المدخلة في النماذج (ص 27).'
+            },
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 28',
+                question: 'أي مما يلي يعد مثالاً على المحافظ الرقمية وطرق الدفع الآمنة لحماية المعلومات المالية وتقليل مخاطر الوصول إليها؟',
+                options: ['Apple Pay', 'FlowCrypt', 'Mozilla Firefox', 'Google Authenticator'],
+                correct: 0,
+                explanation: 'Apple Pay و Google Wallet توفران طرق دفع آمنة لحماية المعلومات المالية للمستخدمين (ص 28).'
+            },
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 28',
+                question: 'تحديث الأنظمة والبرامج والتطبيقات بانتظام لسد الثغرات الأمنية المكتشفة حديثاً يُعرف بـ:',
+                options: ['إدارة التصحيحات الأمنية Patch Management', 'المصادقة البيومترية', 'التصفح المتخفي Incognito', 'الهندسة الاجتماعية'],
+                correct: 0,
+                explanation: 'إدارة التصحيحات الأمنية Patch Management تعنى بتحديث البرامج بانتظام لسد الثغرات الأمنية (ص 28).'
+            },
+
+            // ================= ص 32: ممارسات الأمن السيبراني =================
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 32',
+                question: 'أي مما يلي يعد من ممارسات الأمن السيبراني الآمنة لحماية الحسابات؟',
+                options: ['استخدام كلمات مرور قوية وفريدة وتفعيل المصادقة', 'فتح الروابط والمرفقات مجهولة المصدر', 'مشاركة البيانات الشخصية دون ضوابط', 'تجاهل تحديث البرامج بانتظام'],
+                correct: 0,
+                explanation: 'استخدام كلمات مرور قوية وفريدة وحماية الأجهزة وتفعيل المصادقة من الممارسات الآمنة الأساسية (ص 32).'
+            },
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 32',
+                question: 'عدم فتح روابط مجهولة المصدر أو تحميل ملفات مشبوهة تحاول استدراج المستخدم للكشف عن معلوماته يندرج تحت:',
+                options: ['مكافحة التصيد الاحتيالي Phishing', 'إدارة التصحيحات Patch Management', 'الشبكة الافتراضية VPN', 'المصادقة البيومترية'],
+                correct: 0,
+                explanation: 'مكافحة التصيد الاحتيالي تعني عدم الوقوع فريسة للرسائل أو الروابط المجهولة التي تهدف لسرقة البيانات (ص 32).'
+            },
+            {
+                type: 'tf',
+                badge: 'السؤال الثاني : ضعي علامة ( ✓ ) أو ( ✗ )',
+                page: 'ص 32',
+                question: 'النسخ الاحتياطي للبيانات (Data backup) يضمن الوصول للملفات المهمة في حال تم اختراق النسخة الأصلية منها.',
+                options: ['عبارة صحيحة ( ✓ )', 'عبارة غير صحيحة ( ✗ )'],
+                correct: 0,
+                explanation: 'عبارة صحيحة ( ✓ )؛ النسخ الاحتياطي المنتظم يضمن التوفر وسلامة البيانات عند الطوارئ (ص 32).'
+            },
+            {
+                type: 'tf',
+                badge: 'السؤال الثاني : ضعي علامة ( ✓ ) أو ( ✗ )',
+                page: 'ص 32',
+                question: 'يُنصح بمشاركة المعلومات والبيانات الشخصية على منصات التواصل الاجتماعي دون قيود أو إعدادات خصوصية.',
+                options: ['عبارة صحيحة ( ✓ )', 'عبارة غير صحيحة ( ✗ )'],
+                correct: 1,
+                explanation: 'عبارة غير صحيحة ( ✗ )؛ يجب الحذر على وسائل التواصل وتقليل مشاركة المعلومات وتفعيل إعدادات الخصوصية (ص 32).'
+            },
+
+            // ================= ص 33 - 34: الوظائف في مجال الأمن السيبراني =================
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 33',
+                question: 'الوظيفة التي تعتمد على تحديد الثغرات والقيام بمحاولات اختراق مصرح بها لمحاكاة الهجمات الحقيقية هي:',
+                options: ['المخترق الأخلاقي Ethical Hacker', 'محلل الأمن السيبراني Cybersecurity Analyst', 'مهندس تصميم أنظمة أمنية', 'مدير مركز العمليات'],
+                correct: 0,
+                explanation: 'المخترق الأخلاقي يحاكي الهجمات بموافقة مصرح بها لاكتشاف الثغرات وتعزيز الدفاعات (ص 33).'
+            },
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 33',
+                question: 'المختص المسؤول عن مراقبة الأنظمة والشبكات لاكتشاف الانتهاكات وتحليل مخاطر الأمان والتحقيق في الحوادث:',
+                options: ['محلل الأمن السيبراني Cybersecurity Analyst', 'مخترق أخلاقي', 'مهندس أمن البرمجيات', 'مطور تطبيقات'],
+                correct: 0,
+                explanation: 'محلل الأمن السيبراني يراقب الأنظمة ويحلل المخاطر ويحقق في الحوادث السيبرانية (ص 33).'
+            },
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 34',
+                question: 'المسؤول عن التحقيق في الحوادث الأمنية مثل اختراقات البيانات واحتواء التهديدات وإجراء تحليل مدعوم بالأدلة يسمى:',
+                options: ['المستجيب للحوادث Incident Responder', 'محلل مركز العمليات SOC Analyst', 'مستشار أمني Security Consultant', 'مهندس تصميم أنظمة'],
+                correct: 0,
+                explanation: 'المستجيب للحوادث Incident Responder يستجيب للاختراقات ويحتوي التهديدات ويحلل أسبابها (ص 34).'
+            },
+            {
+                type: 'tf',
+                badge: 'السؤال الثاني : ضعي علامة ( ✓ ) أو ( ✗ )',
+                page: 'ص 34',
+                question: 'يستخدم محلل مركز العمليات الأمنية (SOC Analyst) أدوات إدارة المعلومات والأحداث الأمنية (SIEM) لتحديد التهديدات.',
+                options: ['عبارة صحيحة ( ✓ )', 'عبارة غير صحيحة ( ✗ )'],
+                correct: 0,
+                explanation: 'عبارة صحيحة ( ✓ )؛ محللو SOC يستخدمون أدوات SIEM لمراقبة التنبيهات وتحليل سجلات النظام (ص 34).'
+            },
+
+            // ================= ص 34 - 35: الجوانب الأخلاقية =================
+            {
+                type: 'tf',
+                badge: 'السؤال الثاني : ضعي علامة ( ✓ ) أو ( ✗ )',
+                page: 'ص 34',
+                question: 'يعد احترام خصوصية الآخرين وعدم التجسس على حساباتهم من الجوانب الأخلاقية الرئيسية في مجال الأمن السيبراني.',
+                options: ['عبارة صحيحة ( ✓ )', 'عبارة غير صحيحة ( ✗ )'],
+                correct: 0,
+                explanation: 'عبارة صحيحة ( ✓ )؛ المعلومات الشخصية ملك للفرد ويجب عدم مشاركتها دون إذن أو التجسس عليها (ص 34).'
+            },
+            {
+                type: 'tf',
+                badge: 'السؤال الثاني : ضعي علامة ( ✓ ) أو ( ✗ )',
+                page: 'ص 35',
+                question: 'انتحال شخصية شخص آخر على الإنترنت يُعد تصرفاً قانونياً وأخلاقياً طالما كان على سبيل المزاح.',
+                options: ['عبارة صحيحة ( ✓ )', 'عبارة غير صحيحة ( ✗ )'],
+                correct: 1,
+                explanation: 'عبارة غير صحيحة ( ✗ )؛ انتحال شخصية الآخرين على الإنترنت أمر غير أخلاقي وغير قانوني إطلاقاً (ص 35).'
+            },
+
+            // ================= ص 53: أنواع البيانات Data Types في Python =================
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 53',
+                question: 'أي نوع من أنواع البيانات في لغة Python يستخدم لتخزين القيم العددية وإجراء العمليات الحسابية (مثل int و float)؟',
+                options: ['الأنواع الرقمية (Numeric Types)', 'النوع المنطقي (Boolean Type)', 'النوع الفارغ (None Type)', 'نوع الربط (Mapping Type)'],
+                correct: 0,
+                explanation: 'الأنواع الرقمية Numeric Types (int للأعداد الصحيحة، float للأعداد العشرية) تستخدم للحساب والعمليات العددية (ص 53).'
+            },
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 53',
+                question: 'نوع البيانات في لغة Python المستخدم لتخزين البيانات على شكل أزواج من "مفتاح وقيمة" {"name": "Ali"} يسمى:',
+                options: ['نوع الربط / القاموس (dict)', 'القائمة (list)', 'المجموعة (set)', 'النوع النصي (str)'],
+                correct: 0,
+                explanation: 'نوع الربط Mapping Type يمثله القاموس dict ويخزن البيانات على شكل مفتاح وقيمة (ص 53).'
+            },
+            {
+                type: 'mcq',
+                badge: 'السؤال الأول : اختاري الإجابة الصحيحة',
+                page: 'ص 53',
+                question: 'نوع البيانات في بايثون الذي يعبر عن حالتين منطقيتين فقط (True أو False) هو:',
+                options: ['bool (النوع المنطقي)', 'str (النوع النصي)', 'NoneType (النوع الفارغ)', 'tuple (التسلسلي الثابت)'],
+                correct: 0,
+                explanation: 'النوع المنطقي Boolean Type (bool) يأخذ إحدى القيمتين فقط: إما True أو False (ص 53).'
+            },
+            {
+                type: 'tf',
+                badge: 'السؤال الثاني : ضعي علامة ( ✓ ) أو ( ✗ )',
+                page: 'ص 53',
+                question: 'يستخدم النوع المنطقي في لغة Python لتخزين النصوص والكلمات والرموز.',
+                options: ['عبارة صحيحة ( ✓ )', 'عبارة غير صحيحة ( ✗ )'],
+                correct: 1,
+                explanation: 'عبارة غير صحيحة ( ✗ )؛ تخزين النصوص والكلمات هو وظيفة النوع النصي (str)، أما المنطقي فهو للقيمتين True / False (ص 53).'
+            },
+            {
+                type: 'tf',
+                badge: 'السؤال الثاني : ضعي علامة ( ✓ ) أو ( ✗ )',
+                page: 'ص 53',
+                question: 'يستخدم النوع الفارغ (None Type) في لغة Python للتعبير عن عدم وجود قيمة (None).',
+                options: ['عبارة صحيحة ( ✓ )', 'عبارة غير صحيحة ( ✗ )'],
+                correct: 0,
+                explanation: 'عبارة صحيحة ( ✓ )؛ القيمة None تنتمي للنوع NoneType وتدل على غياب القيمة (ص 53).'
+            }
+        ];
+
+        const QuizApp = {
+            activeQuestions: [],
+            currentIndex: 0,
+            score: 0,
+            studentName: '',
+            userLog: [],
+            timerInterval: null,
+            secondsElapsed: 0,
+
+            // Motivational Quotes Bank for each question step
+            motivationalQuotes: [
+                "واثقون بقدراتكِ المتميزة.. أنتِ قادرة على التفوق! ✨",
+                "ركّزي في السؤال، إجابتكِ الذكية على بُعد خطوة 💡",
+                "كل محاولة تزيدكِ فهماً واستعداداً للاختبار القصير 🎯",
+                "مستقبل التكنولوجيا والذكاء الاصطناعي يبدأ منكِ 🚀",
+                "أداء رائع ومستمر.. تابعي بنفس الحماس والتألق 🌟",
+                "استثمري معلوماتكِ الرائعة، أنتِ متميزة دائماً 👑",
+                "خطوة بخطوة نحو الدرجة الكاملة بإذن الله 💯",
+                "الذكاء الحقيقي في التركيز وتطبيق ما تعلمتِه 🏆",
+                "أنتِ فخر الحوسبة الرقمية والمسار التقني 🌿",
+                "السؤال الأخير! اختميها بإنجاز يرفع الرأس 🌸"
+            ],
+
+            init() {
+                // Application initialized cleanly without legacy status bar clock calls
+            },
+
+            shuffle(arr) {
+                const array = [...arr];
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            },
+
+            start() {
+                SoundFX.init();
+                SoundFX.playClick();
+
+                const nameInput = document.getElementById('input-student').value.trim();
+                this.studentName = nameInput || 'المبدعة';
+
+                // Select 10 fresh random questions
+                const shuffledBank = this.shuffle(QUESTION_BANK);
+                this.activeQuestions = shuffledBank.slice(0, 10);
+
+                this.currentIndex = 0;
+                this.score = 0;
+                this.userLog = [];
+                this.secondsElapsed = 0;
+
+                // Reset & Start Clock
+                clearInterval(this.timerInterval);
+                this.timerInterval = setInterval(() => {
+                    this.secondsElapsed++;
+                    const m = String(Math.floor(this.secondsElapsed / 60)).padStart(2, '0');
+                    const s = String(this.secondsElapsed % 60).padStart(2, '0');
+                    document.getElementById('hud-timer').innerHTML = `<i class="fa-regular fa-clock text-[10px]"></i> ${m}:${s}`;
+                }, 1000);
+
+                // Switch Views
+                document.getElementById('view-welcome').classList.add('hidden');
+                document.getElementById('view-quiz').classList.remove('hidden');
+                document.getElementById('view-results').classList.add('hidden');
+
+                this.renderQuestion();
+            },
+
+            renderQuestion() {
+                const q = this.activeQuestions[this.currentIndex];
+
+                // Update HUD
+                document.getElementById('tracker-counter').textContent = `السؤال ${this.currentIndex + 1} من 10`;
+                document.getElementById('hud-score').textContent = `النقاط: ${this.score}`;
+                const progressPct = ((this.currentIndex + 1) / 10) * 100;
+                document.getElementById('quiz-progress-bar').style.width = `${progressPct}%`;
+
+                // Update Motivational Quote with smooth transition
+                const quoteEl = document.getElementById('label-motivational-quote');
+                if (quoteEl) {
+                    const quote = this.motivationalQuotes[this.currentIndex] || "أنتِ قادرة على حصد الدرجة الكاملة! 🌟";
+                    quoteEl.textContent = quote;
+                }
+
+                // Question Metadata
+                document.getElementById('label-q-category').textContent = q.badge;
+                document.getElementById('label-q-page').textContent = q.page;
+                document.getElementById('label-q-title').textContent = q.question;
+
+                // Reset Feedback & Next Button
+                document.getElementById('card-feedback').classList.add('hidden');
+                document.getElementById('btn-next').classList.add('hidden');
+
+                // Render Options
+                const optionsBox = document.getElementById('box-options');
+                optionsBox.innerHTML = '';
+
+                q.options.forEach((optText, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-card w-full text-right p-3.5 rounded-2xl bg-white/90 border border-slate-200/80 text-xs font-bold text-slate-800 flex items-center justify-between shadow-sm hover:border-blue-400 hover:bg-blue-50/50 active:scale-[0.98] transition-all';
+                    
+                    const marker = q.type === 'mcq' ? String.fromCharCode(65 + idx) : (idx === 0 ? '✓' : '✗');
+
+                    btn.innerHTML = `
+                        <span class="flex-1 leading-relaxed">${optText}</span>
+                        <span class="w-6 h-6 rounded-full border border-slate-300 flex items-center justify-center text-[10px] text-slate-400 font-mono opt-badge shrink-0 mr-2">
+                            ${marker}
+                        </span>
+                    `;
+                    btn.onclick = () => this.handleAnswer(idx, btn);
+                    optionsBox.appendChild(btn);
+                });
+            },
+
+            handleAnswer(selectedIdx, btnElement) {
+                const q = this.activeQuestions[this.currentIndex];
+                const allButtons = document.querySelectorAll('.option-card');
+
+                // Prevent repeat clicks
+                allButtons.forEach(b => b.disabled = true);
+
+                const isCorrect = (selectedIdx === q.correct);
+
+                if (isCorrect) {
+                    this.score++;
+                    SoundFX.playCorrect();
+                } else {
+                    SoundFX.playWrong();
+                }
+
+                // Log entry
+                this.userLog.push({
+                    q: q.question,
+                    user: q.options[selectedIdx],
+                    correct: q.options[q.correct],
+                    isCorrect: isCorrect,
+                    explanation: q.explanation,
+                    page: q.page
+                });
+
+                // Update HUD Score
+                document.getElementById('hud-score').textContent = `النقاط: ${this.score}`;
+
+                // Colorize Options
+                allButtons.forEach((b, idx) => {
+                    const badge = b.querySelector('.opt-badge');
+                    if (idx === q.correct) {
+                        b.classList.remove('bg-white/90', 'border-slate-200/80');
+                        b.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-900');
+                        badge.innerHTML = '<i class="fa-solid fa-check text-emerald-600"></i>';
+                        badge.classList.add('border-emerald-500', 'bg-white');
+                    } else if (idx === selectedIdx && !isCorrect) {
+                        b.classList.remove('bg-white/90', 'border-slate-200/80');
+                        b.classList.add('bg-rose-100', 'border-rose-400', 'text-rose-900');
+                        badge.innerHTML = '<i class="fa-solid fa-xmark text-rose-600"></i>';
+                        badge.classList.add('border-rose-400', 'bg-white');
+                    }
+                });
+
+                // Display Educational Feedback Banner
+                const feedbackCard = document.getElementById('card-feedback');
+                const fbIconWrap = document.getElementById('fb-icon-wrap');
+                const fbIcon = document.getElementById('fb-icon');
+                const fbTitle = document.getElementById('fb-title');
+                const fbText = document.getElementById('fb-explanation');
+
+                feedbackCard.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-200', 'bg-rose-50', 'border-rose-200');
+
+                if (isCorrect) {
+                    feedbackCard.classList.add('bg-emerald-50', 'border-emerald-200');
+                    fbIconWrap.className = 'w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 mt-0.5';
+                    fbIcon.className = 'fa-solid fa-check';
+                    fbTitle.textContent = 'إجابة صحيحة ومتميزة! 🌟';
+                    fbTitle.className = 'font-black text-emerald-800 text-xs';
+                } else {
+                    feedbackCard.classList.add('bg-rose-50', 'border-rose-200');
+                    fbIconWrap.className = 'w-7 h-7 rounded-full bg-rose-500 text-white flex items-center justify-center shrink-0 mt-0.5';
+                    fbIcon.className = 'fa-solid fa-lightbulb';
+                    fbTitle.textContent = 'إجابة غير صحيحة - المرجع المعتمد من الكتاب: 💡';
+                    fbTitle.className = 'font-black text-rose-800 text-xs';
+                }
+                fbText.textContent = q.explanation;
+
+                // Show Next or Submit Button
+                const nextBtn = document.getElementById('btn-next');
+                const nextBtnLabel = document.getElementById('btn-next-label');
+                nextBtn.classList.remove('hidden');
+
+                if (this.currentIndex === this.activeQuestions.length - 1) {
+                    nextBtnLabel.textContent = 'إنهاء وتوليد بطاقة النتيجة';
+                } else {
+                    nextBtnLabel.textContent = 'السؤال التالي';
+                }
+            },
+
+            next() {
+                SoundFX.playClick();
+                if (this.currentIndex < this.activeQuestions.length - 1) {
+                    this.currentIndex++;
+                    this.renderQuestion();
+                } else {
+                    this.finish();
+                }
+            },
+
+            finish() {
+                clearInterval(this.timerInterval);
+
+                document.getElementById('view-quiz').classList.add('hidden');
+                document.getElementById('view-results').classList.remove('hidden');
+
+                const total = this.activeQuestions.length;
+                const percentage = Math.round((this.score / total) * 100);
+
+                document.getElementById('res-score-text').textContent = `${this.score}/${total}`;
+                document.getElementById('res-percentage-text').textContent = `${percentage}%`;
+                document.getElementById('res-correct-count').textContent = `${this.score}`;
+
+                const m = String(Math.floor(this.secondsElapsed / 60)).padStart(2, '0');
+                const s = String(this.secondsElapsed % 60).padStart(2, '0');
+                document.getElementById('res-time-spent').textContent = `${m}:${s}`;
+
+                const titleEl = document.getElementById('res-title');
+                const subTitleEl = document.getElementById('res-subtitle');
+                const badgeIconEl = document.getElementById('res-badge-icon');
+                const gradeBadgeEl = document.getElementById('res-grade-badge');
+
+                if (percentage >= 90) {
+                    titleEl.textContent = `مبدعة يا ${this.studentName}! 👑`;
+                    subTitleEl.textContent = 'استيعاب خيالي ومتمكن جداً من مصطلحات الكتاب، أنتِ مستعدة تماماً للاختبار القصير!';
+                    gradeBadgeEl.textContent = 'امتياز مرتفع 🏆';
+                    badgeIconEl.className = 'fa-solid fa-crown text-3xl text-white';
+                    confetti({ particleCount: 140, spread: 80, origin: { y: 0.6 } });
+                } else if (percentage >= 70) {
+                    titleEl.textContent = `أحسنتِ يا ${this.studentName}! 👏`;
+                    subTitleEl.textContent = 'مستوى رائع جداً ومراجعة مثمرة، كرري المحاولة لتثبيت الدرجة الكاملة!';
+                    gradeBadgeEl.textContent = 'جيد جداً 🌟';
+                    badgeIconEl.className = 'fa-solid fa-award text-3xl text-white';
+                } else {
+                    titleEl.textContent = `محاولة طيبة يا ${this.studentName} 🌿`;
+                    subTitleEl.textContent = 'راجعي الإجابات في الأسفل وركزي على صفحات الوظائف وأنواع البيانات ثم ابدأي من جديد.';
+                    gradeBadgeEl.textContent = 'يحتاج لمراجعة 📖';
+                    badgeIconEl.className = 'fa-solid fa-book-open text-3xl text-white';
+                }
+
+                this.renderReviewList();
+            },
+
+            renderReviewList() {
+                const box = document.getElementById('box-review-items');
+                box.innerHTML = '';
+
+                this.userLog.forEach((item, idx) => {
+                    const card = document.createElement('div');
+                    card.className = `p-3.5 rounded-2xl border text-xs space-y-1.5 ${item.isCorrect ? 'bg-emerald-50/80 border-emerald-200' : 'bg-rose-50/80 border-rose-200'}`;
+                    
+                    card.innerHTML = `
+                        <div class="flex justify-between items-center font-bold">
+                            <span class="${item.isCorrect ? 'text-emerald-700' : 'text-rose-700'} text-[11px]">
+                                ${item.isCorrect ? '<i class="fa-solid fa-circle-check ml-1"></i> إجابة صحيحة' : '<i class="fa-solid fa-circle-xmark ml-1"></i> إجابة خاطئة'} (سؤال ${idx + 1})
+                            </span>
+                            <span class="text-[9.5px] text-slate-500 font-bold bg-white px-2 py-0.5 rounded-md border">${item.page}</span>
+                        </div>
+                        <p class="font-black text-slate-900 text-xs pt-0.5">${item.q}</p>
+                        <div class="text-[11px] space-y-0.5 pt-0.5">
+                            <p class="text-slate-600">إجابتكِ: <span class="${item.isCorrect ? 'text-emerald-700 font-black' : 'text-rose-600 font-black'}">${item.user}</span></p>
+                            ${!item.isCorrect ? `<p class="text-slate-600">الإجابة المعتمدة: <span class="text-emerald-700 font-black">${item.correct}</span></p>` : ''}
+                        </div>
+                        <p class="text-[10px] text-slate-600 pt-1 border-t border-slate-200/60 leading-relaxed font-semibold">💡 ${item.explanation}</p>
+                    `;
+                    box.appendChild(card);
+                });
+            },
+
+            toggleReview() {
+                SoundFX.playClick();
+                const box = document.getElementById('box-review-items');
+                const chevron = document.getElementById('review-chevron');
+
+                if (box.classList.contains('hidden')) {
+                    box.classList.remove('hidden');
+                    chevron.classList.add('rotate-180');
+                } else {
+                    box.classList.add('hidden');
+                    chevron.classList.remove('rotate-180');
+                }
+            }
+        };
+
+        // Window onload initialization
+        window.onload = function() {
+            QuizApp.init();
+        };
+    </script>
+</body>
+</html>
